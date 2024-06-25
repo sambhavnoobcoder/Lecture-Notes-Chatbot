@@ -4,6 +4,7 @@ import numpy as np
 import faiss
 from sentence_transformers import SentenceTransformer
 from bs4 import BeautifulSoup
+import gradio as gr
 
 # Configure Gemini API key
 GOOGLE_API_KEY = <"GEMINI API KEY">  # Replace with your API key
@@ -11,6 +12,8 @@ genai.configure(api_key=GOOGLE_API_KEY)
 
 # Initialize conversation history
 conversation_history = []
+
+
 # Fetch lecture notes and model architectures
 def fetch_lecture_notes():
     lecture_urls = [
@@ -40,6 +43,7 @@ def fetch_model_architectures():
         print(f"Failed to fetch model architectures, status code: {response.status_code}")
         return "", url
 
+
 # Extract text from HTML content
 def extract_text_from_html(html_content):
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -47,6 +51,7 @@ def extract_text_from_html(html_content):
         script.extract()
     text = soup.get_text(separator="\n", strip=True)
     return text
+
 
 # Generate embeddings using SentenceTransformers
 def create_embeddings(texts, model):
@@ -61,6 +66,7 @@ def initialize_faiss_index(embeddings):
     index = faiss.IndexFlatL2(dimension)
     index.add(embeddings.astype('float32'))
     return index
+
 
 # Handle natural language queries
 def handle_query(query, faiss_index, embeddings_texts, model):
@@ -99,6 +105,7 @@ def handle_query(query, faiss_index, embeddings_texts, model):
 
     return generated_text, sources
 
+
 def generate_concise_response(prompt, context):
     try:
         response = genai.generate_text(
@@ -110,6 +117,7 @@ def generate_concise_response(prompt, context):
     except Exception as e:
         print(f"Error generating concise response: {e}")
         return "An error occurred while generating the concise response."
+
 
 # Main function to execute the pipeline
 def chatbot(message, history):
@@ -172,3 +180,6 @@ iface = gr.ChatInterface(
     undo_btn="Undo",
     clear_btn="Clear",
 )
+
+if __name__ == "__main__":
+    iface.launch(server_name="127.0.0.1", server_port=7860)
