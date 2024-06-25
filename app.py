@@ -1,5 +1,7 @@
 import requests
 import numpy as np
+from bs4 import BeautifulSoup
+
 
 # Fetch lecture notes and model architectures
 def fetch_lecture_notes():
@@ -29,3 +31,11 @@ def fetch_model_architectures():
     else:
         print(f"Failed to fetch model architectures, status code: {response.status_code}")
         return "", url
+
+# Extract text from HTML content
+def extract_text_from_html(html_content):
+    soup = BeautifulSoup(html_content, 'html.parser')
+    for script in soup(["script", "style"]):
+        script.extract()
+    text = soup.get_text(separator="\n", strip=True)
+    return text
