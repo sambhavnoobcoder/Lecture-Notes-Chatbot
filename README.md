@@ -14,3 +14,4 @@ This Section comprises of the checklist of tasks to be completed .They are sorte
 - [x] Conversational Memory
 - [x] Citing References
 - [x] Multiple Class Lecture Notes
+- [x] Built a Basic User Interface (Gradio Frontend) 
