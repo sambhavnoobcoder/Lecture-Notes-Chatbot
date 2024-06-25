@@ -1,5 +1,7 @@
 import requests
 import numpy as np
+import faiss
+from sentence_transformers import SentenceTransformer
 from bs4 import BeautifulSoup
 
 
@@ -39,3 +41,17 @@ def extract_text_from_html(html_content):
         script.extract()
     text = soup.get_text(separator="\n", strip=True)
     return text
+
+# Generate embeddings using SentenceTransformers
+def create_embeddings(texts, model):
+    texts_only = [text for text, _ in texts]
+    embeddings = model.encode(texts_only)
+    return embeddings
+
+
+# Initialize FAISS index
+def initialize_faiss_index(embeddings):
+    dimension = embeddings.shape[1]  # Assuming all embeddings have the same dimension
+    index = faiss.IndexFlatL2(dimension)
+    index.add(embeddings.astype('float32'))
+    return index
