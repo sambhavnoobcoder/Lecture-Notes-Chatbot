@@ -111,3 +111,64 @@ def generate_concise_response(prompt, context):
         print(f"Error generating concise response: {e}")
         return "An error occurred while generating the concise response."
 
+# Main function to execute the pipeline
+def chatbot(message, history):
+    lecture_notes = fetch_lecture_notes()
+    model_architectures = fetch_model_architectures()
+
+    all_texts = lecture_notes + [model_architectures]
+
+    # Load the SentenceTransformers model
+    embedding_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+
+    embeddings = create_embeddings(all_texts, embedding_model)
+
+    # Initialize FAISS index
+    faiss_index = initialize_faiss_index(np.array(embeddings))
+
+    response, sources = handle_query(message, faiss_index, all_texts, embedding_model)
+    print("Query:", message)
+    print("Response:", response)
+
+    # Format the response with conversation history
+    formatted_response = "Conversation History:\n\n"
+    for entry in conversation_history:
+        formatted_response += entry + "\n"
+
+    formatted_response += "\nCurrent Response:\n" + response
+
+    if sources:
+        print("Sources:", sources)
+        formatted_response += "\n\nSources:\n" + "\n".join(sources)
+    else:
+        print("Sources: None of the provided sources were used.")
+
+    # Generate a concise and relevant summary using Gemini
+    prompt = "Summarize the user queries so far"
+    user_queries_summary = " ".join([entry for entry in conversation_history if entry.startswith("User: ")])
+    concise_response = generate_concise_response(prompt, user_queries_summary)
+    print("Concise Response:")
+    print(concise_response)
+
+    formatted_response += "\n\nConcise Summary:\n" + concise_response
+
+    print("----")
+
+    return formatted_response
+
+
+iface = gr.ChatInterface(
+    chatbot,
+    title="LLM Research Assistant",
+    description="Ask questions about LLM architectures, datasets, and training techniques.",
+    examples=[
+        "What are some milestone model architectures in LLMs?",
+        "Explain the transformer architecture.",
+        "Tell me about datasets used to train LLMs.",
+        "How are LLM training datasets cleaned and preprocessed?",
+        "Summarize the user queries so far"
+    ],
+    retry_btn="Regenerate",
+    undo_btn="Undo",
+    clear_btn="Clear",
+)
