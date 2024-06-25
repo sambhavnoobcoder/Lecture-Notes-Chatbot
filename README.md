@@ -15,6 +15,7 @@ This Section comprises of the checklist of tasks to be completed .They are sorte
 - [x] Citing References
 - [x] Multiple Class Lecture Notes
 - [x] Built a Basic User Interface (Gradio Frontend)
+- [x] Deployed Project on Huggingface (Link : <https://huggingface.co/spaces/Sambhavnoobcoder/Lecture-Notes-Chatbot>)
 ## Project Images
 Gradio UI:
 <img width="1440" alt="Gradio UI" src="https://github.com/sambhavnoobcoder/Lecture-Notes-Chatbot/assets/94298612/374bb6ad-2af7-4d90-a75d-d27c32722df2">
