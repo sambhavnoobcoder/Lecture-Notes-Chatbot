@@ -98,3 +98,16 @@ def handle_query(query, faiss_index, embeddings_texts, model):
     sources = [url for _, url in relevant_texts]
 
     return generated_text, sources
+
+def generate_concise_response(prompt, context):
+    try:
+        response = genai.generate_text(
+            model="models/text-bison-001",
+            prompt=f"{prompt}\n\nContext: {context}\n\nAnswer:",
+            max_output_tokens=200
+        )
+        return response.result if response else "No response generated."
+    except Exception as e:
+        print(f"Error generating concise response: {e}")
+        return "An error occurred while generating the concise response."
+
