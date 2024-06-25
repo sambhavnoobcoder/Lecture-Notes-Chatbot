@@ -1,10 +1,16 @@
+import google.generativeai as genai
 import requests
 import numpy as np
 import faiss
 from sentence_transformers import SentenceTransformer
 from bs4 import BeautifulSoup
 
+# Configure Gemini API key
+GOOGLE_API_KEY = <"GEMINI API KEY">  # Replace with your API key
+genai.configure(api_key=GOOGLE_API_KEY)
 
+# Initialize conversation history
+conversation_history = []
 # Fetch lecture notes and model architectures
 def fetch_lecture_notes():
     lecture_urls = [
@@ -55,3 +61,16 @@ def initialize_faiss_index(embeddings):
     index = faiss.IndexFlatL2(dimension)
     index.add(embeddings.astype('float32'))
     return index
+
+# Handle natural language queries
+def handle_query(query, faiss_index, embeddings_texts, model, conversation_history):
+    query_embedding = model.encode([query]).astype('float32')
+
+    # Search FAISS index
+    _, indices = faiss_index.search(query_embedding, 1)  # Retrieve top 1 result
+    relevant_text = embeddings_texts[indices[0][0]]
+
+    # Update conversation history
+    conversation_history.add_to_history(query, relevant_text)
+    
+    return relevant_text
