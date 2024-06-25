@@ -1,0 +1,6 @@
+google-generativeai
+requests
+faiss-cpu
+sentence-transformers
+gradio
+BeautifulSoup4
