@@ -63,14 +63,38 @@ def initialize_faiss_index(embeddings):
     return index
 
 # Handle natural language queries
-def handle_query(query, faiss_index, embeddings_texts, model, conversation_history):
+def handle_query(query, faiss_index, embeddings_texts, model):
+    global conversation_history
+
     query_embedding = model.encode([query]).astype('float32')
 
     # Search FAISS index
-    _, indices = faiss_index.search(query_embedding, 1)  # Retrieve top 1 result
-    relevant_text = embeddings_texts[indices[0][0]]
+    _, indices = faiss_index.search(query_embedding, 3)  # Retrieve top 3 results
+    relevant_texts = [embeddings_texts[idx] for idx in indices[0]]
+
+    # Combine relevant texts and truncate if necessary
+    combined_text = "\n".join([text for text, _ in relevant_texts])
+    max_length = 500  # Adjust as necessary
+    if len(combined_text) > max_length:
+        combined_text = combined_text[:max_length] + "..."
+
+    # Generate a response using Gemini
+    try:
+        response = genai.generate_text(
+            model="models/text-bison-001",
+            prompt=f"Based on the following context:\n\n{combined_text}\n\nAnswer the following question: {query}",
+            max_output_tokens=200
+        )
+        generated_text = response.result if response else "No response generated."
+    except Exception as e:
+        print(f"Error generating text: {e}")
+        generated_text = "An error occurred while generating the response."
 
     # Update conversation history
-    conversation_history.add_to_history(query, relevant_text)
-    
-    return relevant_text
+    conversation_history.append(f"User: {query}")
+    conversation_history.append(f"System: {generated_text}")
+
+    # Extract sources
+    sources = [url for _, url in relevant_texts]
+
+    return generated_text, sources
