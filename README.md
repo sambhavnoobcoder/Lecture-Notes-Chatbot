@@ -92,3 +92,69 @@ As the number of lectures and papers grows, the system can be scaled by:
 5. **Model Optimization**:
    - Optimize the embedding and response generation models for faster inference times, potentially using model quantization and other techniques.
 
+## Setup Instructions
+
+To set up the Python version of the Lecture-Notes-Chatbot project, follow these steps:
+
+### Prerequisites
+
+Ensure you have the following software installed:
+
+- Python 3.7 or later
+- pip (Python package installer)
+
+### Installation
+
+1. **Clone the Repository**
+
+   Clone the repository to your local machine using the following command:
+
+   ```
+   git clone https://github.com/sambhavnoobcoder/Lecture-Notes-Chatbot.git
+   cd Lecture-Notes-Chatbot
+2. **Create a Virtual Environment**
+
+It is recommended to create a virtual environment to manage your project dependencies. Run the following commands:
+
+```
+python -m venv env
+source env/bin/activate   # On Windows use `env\Scripts\activate`
+```
+
+3.Install Dependencies
+
+Install the required Python packages using pip:
+
+
+```
+pip install -r requirements.txt
+```
+If the requirements.txt file does not exist, install the dependencies individually:
+
+```
+pip install google-generativeai requests faiss-cpu sentence-transformers gradio beautifulsoup4
+```
+4.Set Up Google Gemini API Key
+
+Obtain your API key from Google MakerSuite.
+Store your API key in a secure place, such as an environment variable or a secret management tool.
+
+5.Configure API Key
+
+Configure your API key in the script by replacing your_google_api_key with your actual API key:
+
+```
+import google.generativeai as genai
+
+genai.configure(api_key="your_google_api_key")
+```
+
+6.Running the Application
+To run the application, execute the following command:
+
+```
+python app.py
+```
+This will start the Gradio interface for the Lecture-Notes-Chatbot. You can interact with the chatbot through the Gradio UI that opens in your browser.
+
+You can prefer to run the colab notebook , setup perfectly to avoid the hassle as well . the notebook on the repo is also availabel on the link : <https://colab.research.google.com/drive/1X0062BNt_UK7_UOTROD-QjbNNIW4mW2n?usp=sharing>
